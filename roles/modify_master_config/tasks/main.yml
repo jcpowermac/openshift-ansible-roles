@@ -1,0 +1,38 @@
+- name: modify master-config 
+  yedit:
+    src: /etc/origin/master/master-config.yaml 
+    key: "{{ master_config_key }}" 
+    state: present 
+    backup: True
+    append: True
+    value: "{{ master_config_value }}"
+  register: modify
+
+- block:
+   - name: restart master 
+     systemd:
+       name: "{{ service_type }}-master"
+       state: restarted
+     when: modify | changed
+  rescue:
+    - name: copy broken master-config file
+      copy:
+        src: "{{ master_config_path }}"
+        dest: "{{ master_config_path }}.broke"
+        remote_src: True
+    
+    - name: remove broken master-config file
+      file:
+        path: "{{ master_config_path }}"
+        state: absent
+    
+    - name: restore existing master-config file
+      copy:
+        src: "{{ master_config_path }}.orig"
+        dest: "{{ master_config_path }}"
+        remote_src: True
+      
+    - name: restart master rescue 
+      systemd:
+        name: "{{ service_type }}-master"
+        state: restarted

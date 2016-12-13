@@ -1,0 +1,21 @@
+- hosts: masters 
+  gather_facts: no
+  vars:
+    client_id: 
+    client_secret:  
+    hosted_domain: redhat.com
+    master_config_path: /etc/origin/master/master-config.yaml
+    master_config_key: oauthConfig.identityProviders
+    master_config_value: 
+      name: google
+      challenge: false  
+      login: true  
+      provider:  
+        apiVersion: v1  
+        kind: GoogleIdentityProvider  
+        clientID: "{{ client_id }}" 
+        clientSecret: "{{ client_secret }}"
+        hostedDomain: "{{ hosted_domain }}"
+  roles:
+    - lib_yaml_editor
+    - modify_master_config 

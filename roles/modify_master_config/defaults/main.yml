@@ -1,0 +1,5 @@
+---
+# defaults file for modify-master-config
+hosted_domain: redhat.com
+master_config_path: /etc/origin/master/master-config.yaml
+service_type: atomic-openshift
